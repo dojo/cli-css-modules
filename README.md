@@ -9,16 +9,16 @@
 -->
 
 Compile [CSS modules](https://github.com/css-modules/css-modules) using the [dojo cli](http://github.com/dojo/cli).
-
+g
 ## Features
 
 Pass a file glob to match CSS files to compile, outputting compiles CSS modules and [TypeScript](https://www.typescriptlang.org/) modules containing a map of local CSS classnames to generated classnames.
 
 ## How do I use this package?
 
-#. `npm install -g dojo-cli`
-#. `npm install -g dojo-cli-css-modules`
-#. `dojo css modules -cssOut . -tsOut . css/*.css`
+1. `npm install -g dojo-cli`
+2. `npm install -g dojo-cli-css-modules`
+3. `dojo css modules -cssOut . -tsOut . css/*.css`
 
 ## How do I contribute?
 
