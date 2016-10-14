@@ -1,92 +1,100 @@
-import { join } from 'path';
-import { beforeEach, afterEach, describe, it } from 'intern!bdd';
+import { before, beforeEach, afterEach, describe, it } from 'intern!bdd';
 import * as assert from 'intern/chai!assert';
-import MockModule from '../support/MockModule';
-import { throwImmediatly } from '../support/util';
 import * as sinon from 'sinon';
+import * as fs from 'fs';
+
+let main: any;
 
 describe('main', () => {
-
-	let moduleUnderTest: any;
-	let mockModule: MockModule;
-	let mockWebpack: any;
-	let mockWebpackConfig: any;
 	let sandbox: sinon.SinonSandbox;
+
+	before(() => {
+		main = require('intern/dojo/node!./../../src/main');
+	});
 
 	beforeEach(() => {
 		sandbox = sinon.sandbox.create();
-		mockModule = new MockModule('../../src/main');
-		mockModule.dependencies(['./webpack.config', 'webpack', 'webpack-dev-server']);
-		mockWebpack = mockModule.getMock('webpack');
-		mockWebpackConfig = mockModule.getMock('./webpack.config');
-		mockWebpackConfig.entry = [];
-		moduleUnderTest = mockModule.getModuleUnderTest().default;
-		sandbox.stub(console, 'log');
 	});
 
 	afterEach(() => {
 		sandbox.restore();
-		mockModule.destroy();
 	});
 
 	it('should register supported arguments', () => {
-		const helper = { yargs: { option: sandbox.stub() } };
-		moduleUnderTest.register(helper);
+		const helper = { yargs: {
+			option: sandbox.stub(),
+			check: sandbox.stub()
+		} };
+		main.default.register(helper);
 		assert.deepEqual(
 			helper.yargs.option.firstCall.args,
-			[ 'w', { alias: 'watch', describe: 'watch and serve' } ]
+			[ 'c', {
+				alias: 'cssOut',
+				describe: 'directory to write CSS modules',
+				demand: false,
+				type: 'string'
+			} ]
 		);
 		assert.deepEqual(
 			helper.yargs.option.secondCall.args,
-			[ 'p', { alias: 'port', describe: 'port to serve on when using --watch', type: 'number' }],
+			[ 't', {
+				alias: 'tsOut',
+				describe: 'directory to write TS modules',
+				demand: false,
+				type: 'string'
+			} ]
 		);
 	});
 
-	it('should run compile and log results on success', () => {
-		mockWebpack.run = sandbox.stub().yields(false, 'some stats');
-		return moduleUnderTest.run({}, {}).then(() => {
-			assert.isTrue(mockWebpack.run.calledOnce);
-			assert.isTrue((<sinon.SinonStub> console.log).calledWith('some stats'));
+	it('should create a CSS module file', () => {
+		const writeFileStub: sinon.SinonStub = sandbox.stub(fs, 'writeFile', function (name: string, content: string, done: Function) {
+			done();
+		});
+		return main.default.run({}, {
+			cssOut: '.',
+			_: [null, null, 'tests/support/test.css']
+		}).then(() => {
+			assert.isTrue(writeFileStub.calledOnce);
+			assert.strictEqual(writeFileStub.getCall(0).args[0], 'test.css');
 		});
 	});
 
-	it('should run compile and reject on failure', () => {
-		const compilerError = new Error('compiler error');
-		mockWebpack.run = sandbox.stub().yields(compilerError, null);
-		return moduleUnderTest.run({}, {}).then(
-			throwImmediatly,
-			(e: Error) => {
-				assert.isTrue(mockWebpack.run.calledOnce);
-				assert.equal(e, compilerError);
-			}
-		);
-	});
-
-	it('should run watch, setting appropriate webpack options', () => {
-		const mockWebpackDevServer = mockModule.getMock('webpack-dev-server');
-		mockWebpackDevServer.listen = sandbox.stub().yields();
-		moduleUnderTest.run({}, { watch: true });
-		return new Promise((resolve) => setTimeout(resolve, 10)).then(() => {
-			assert.isTrue(mockWebpackDevServer.listen.calledOnce);
-			assert.isTrue((<sinon.SinonStub> console.log).firstCall.calledWith('Starting server on http://localhost:9999'));
-			assert.equal(mockWebpackConfig.devtool, 'eval-source-map');
-			assert.deepEqual(
-				mockWebpackConfig.entry,
-				[join(require.toUrl('src'), 'node_modules', 'webpack-dev-server/client?')]
-			);
+	it('should create a TS module file', () => {
+		const writeFileSyncStub: sinon.SinonStub = sandbox.stub(fs, 'writeFileSync');
+		return main.default.run({}, {
+			tsOut: '.',
+			_: [null, null, 'tests/support/test.css']
+		}).then(() => {
+			assert.isTrue(writeFileSyncStub.calledOnce);
+			assert.strictEqual(writeFileSyncStub.getCall(0).args[0], './test.ts');
 		});
 	});
 
-	it('should run watch and reject on failure', () => {
-		const compilerError = new Error('compiler error');
-		const mockWebpackDevServer = mockModule.getMock('webpack-dev-server');
-		mockWebpackDevServer.listen = sandbox.stub().yields(compilerError);
-		return moduleUnderTest.run({}, { watch: true }).then(
-			throwImmediatly,
-			(e: Error) => {
-				assert.isTrue(mockWebpackDevServer.listen.calledOnce);
-				assert.equal(e, compilerError);
-			}
-		);
+	it('should not create a CSS module file if cssOut not specified', () => {
+		const writeFileStub: sinon.SinonStub = sandbox.stub(fs, 'writeFile', function (name: string, content: string, done: Function) {
+			done();
+		});
+		return main.default.run({}, {
+			_: [null, null, 'tests/support/test.css']
+		}).then(() => {
+			assert.isFalse(writeFileStub.called);
+		});
+	});
+
+	it('should not create a TS module file if tsOut not specified', () => {
+		const writeFileSyncStub: sinon.SinonStub = sandbox.stub(fs, 'writeFileSync');
+		return main.default.run({}, {
+			_: [null, null, 'tests/support/test.css']
+		}).then(() => {
+			assert.isFalse(writeFileSyncStub.called);
+		});
+	});
+
+	it ('should reject if CSS file is invalid', function (this: any) {
+		const dfd: any = this.async();
+
+		main.default.run({}, {
+			_: [null, null, 'tests/support/invalid.css']
+		}).then(() => { }, dfd.callback(() => {}));
 	});
 });

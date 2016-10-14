@@ -17,8 +17,7 @@ interface PostcssArgs extends Argv {
 }
 
 function processFile(args: PostcssArgs, processor: any, file: string, done: Function): void {
-	const cssOut: string = args.cssOut || path.dirname(file);
-	const outputPath: string = path.join(cssOut, path.basename(file));
+	const outputPath: string = path.join(args.cssOut || '', path.basename(file));
 
 	function execute(css: string, done: Function): void {
 		function complete(result: any) {
@@ -47,9 +46,11 @@ function processFile(args: PostcssArgs, processor: any, file: string, done: Func
 					if (err) {
 						done(err);
 					}
-					else {
+					else if (args.cssOut) {
 						fs.writeFile(name, content, done);
 						console.log(chalk.green(name));
+					} else {
+						done();
 					}
 				});
 			}, name, content.css)
@@ -67,6 +68,9 @@ function modularize(args: PostcssArgs): Promise<any> {
 	const processor: any = postcss([
 		cssModules({
 			getJSON: function(cssFileName: string, json: string) {
+				if (!args.tsOut) {
+					return;
+				}
 				const filename = path.basename(cssFileName, '.css');
 				fs.writeFileSync(
 					`${ args.tsOut || '.' }/${ filename }.ts`,
@@ -93,25 +97,24 @@ function modularize(args: PostcssArgs): Promise<any> {
 const command: Command = {
 	description: 'compile css modules',
 	register(helper: Helper) {
-		helper.yargs
-			.option('c', {
-				alias: 'cssOut',
-				describe: 'directory to write CSS modules',
-				demand: true,
-				type: 'string'
-			})
-			.option('t', {
-				alias: 'tsOut',
-				describe: 'directory to write TS modules',
-				demand: true,
-				type: 'string'
-			})
-			.check(function(argv) {
-				if (argv._.length === 2) {
-					throw 'input CSS file(s) must be specified';
-				}
-				return true;
-			});
+		helper.yargs.option('c', {
+			alias: 'cssOut',
+			describe: 'directory to write CSS modules',
+			demand: false,
+			type: 'string'
+		});
+		helper.yargs.option('t', {
+			alias: 'tsOut',
+			describe: 'directory to write TS modules',
+			demand: false,
+			type: 'string'
+		});
+		helper.yargs.check(function(argv) {
+			if (argv._.length === 2) {
+				throw 'input CSS file(s) must be specified';
+			}
+			return true;
+		});
 
 		return helper.yargs;
 	},
