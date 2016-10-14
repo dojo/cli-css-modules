@@ -1,6 +1,4 @@
 # cli-css-modules
-=======
-# dojo-cli-css-modules
 
 <!-- TODO: change and uncomment
 [![Build Status](https://travis-ci.org/dojo/cli-build.svg?branch=master)](https://travis-ci.org/dojo/cli-build)
