@@ -28,9 +28,18 @@ describe('main', () => {
 		main.default.register(helper);
 		assert.deepEqual(
 			helper.yargs.option.firstCall.args,
+			['i', {
+				alias: 'in',
+				describe: 'Input CSS module file(s)',
+				demand: true,
+				type: 'string'
+			}]
+		);
+		assert.deepEqual(
+			helper.yargs.option.secondCall.args,
 			[ 'o', {
 				alias: 'out',
-				describe: 'directory to write CSS module declaration files',
+				describe: 'Directory to write CSS module declaration files',
 				demand: true,
 				type: 'string'
 			} ]
@@ -42,11 +51,11 @@ describe('main', () => {
 			done();
 		});
 		return main.default.run({}, {
-			out: '.',
-			_: [null, null, 'tests/support/test.css']
+			in: 'tests/support/test.css',
+			out: '.'
 		}).then(() => {
 			assert.isTrue(writeFileStub.calledOnce);
-			assert.strictEqual(writeFileStub.getCall(0).args[0], 'test.d.ts');
+			assert.strictEqual(writeFileStub.getCall(0).args[0], 'test.css.d.ts');
 		});
 	});
 });
