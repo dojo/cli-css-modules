@@ -14,7 +14,7 @@ export interface TypingsArgs extends Argv {
 
 function readFile(fileName: string) {
 	return new Promise((resolve, reject) => {
-		read(fileName, (err: any, buffer: Buffer) => {
+		read(fileName, (err: Error, buffer: Buffer) => {
 			if (err) {
 				reject(err);
 				return;
@@ -25,9 +25,9 @@ function readFile(fileName: string) {
 	});
 }
 
-function write(name: string, content: any) {
+function write(name: string, content: { formatted: string }) {
 	return new Promise((resolve, reject) => {
-		mkdirp(path.dirname(name), (err: any) => {
+		mkdirp(path.dirname(name), (err: Error) => {
 			if (err) {
 				reject(err);
 				return;
@@ -53,11 +53,11 @@ async function processFile(args: TypingsArgs, creator: any, fileName: string) {
 	return await write(outputPath, typings);
 }
 
-export function generate(args: TypingsArgs): Promise<any> {
+export function generate(args: TypingsArgs): Promise<void> {
 	let creator: any = new DtsCreator();
 	const inputFiles: string[] = globby.sync(args.in);
 
-	const operations: Promise<any>[] = inputFiles.map((file) => {
+	const operations: Promise<void>[] = inputFiles.map((file) => {
 		return processFile(args, creator, file);
 	});
 
