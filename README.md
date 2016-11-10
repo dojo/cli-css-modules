@@ -4,7 +4,7 @@
 [![codecov](https://codecov.io/gh/dojo/cli-css-typings/branch/master/graph/badge.svg)](https://codecov.io/gh/dojo/cli-css-typings)
 [![npm version](https://badge.fury.io/js/dojo-cli-css-typings.svg)](http://badge.fury.io/js/dojo-cli-css-typings)
 
-Compile [CSS modules](https://github.com/css-modules/css-modules) using the [dojo cli](http://github.com/dojo/cli).
+Generate `.d.ts` files for [CSS modules](https://github.com/css-modules/css-modules) using the [dojo cli](http://github.com/dojo/cli).
 
 ## Features
 
