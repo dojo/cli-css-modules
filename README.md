@@ -16,7 +16,7 @@ Pass a file glob to match CSS files for which to generate [TypeScript](https://w
 
 1. `npm install -g dojo-cli`
 2. `npm install -g dojo-cli-css-typings`
-3. `dojo css typings -out . css/*.css`
+3. `dojo css typings --in '*.css' --out .`
 
 ## How do I contribute?
 
