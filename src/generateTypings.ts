@@ -12,9 +12,9 @@ export interface TypingsArgs extends Argv {
 	out: string;
 }
 
-function readFile(file: string) {
+function readFile(fileName: string) {
 	return new Promise((resolve, reject) => {
-		read(file, function (err: any, buffer: Buffer) {
+		read(fileName, (err: any, buffer: Buffer) => {
 			if (err) {
 				reject(err);
 				return;
@@ -25,23 +25,15 @@ function readFile(file: string) {
 	});
 }
 
-function execute(declarations: {}, creator: any) {
-	return new Promise((resolve, reject) => {
-		creator.create('', declarations).then(function (result: any) {
-			resolve(result);
-		}).catch(reject);
-	});
-}
-
 function write(name: string, content: any) {
 	return new Promise((resolve, reject) => {
-		mkdirp(path.dirname(name), function(err: any) {
+		mkdirp(path.dirname(name), (err: any) => {
 			if (err) {
 				reject(err);
 				return;
 			}
 
-			fs.writeFile(name, content.formatted, function (err) {
+			fs.writeFile(name, content.formatted, (err) => {
 				if (err) {
 					reject(err);
 					return;
@@ -53,11 +45,11 @@ function write(name: string, content: any) {
 	});
 };
 
-async function processFile(args: TypingsArgs, creator: any, file: string) {
-	const outputPath: string = path.join(args.out, path.basename(file) + '.d.ts');
+async function processFile(args: TypingsArgs, creator: any, fileName: string) {
+	const outputPath: string = path.join(args.out, path.basename(fileName) + '.d.ts');
 
-	const contents = await readFile(file);
-	const typings = await execute(contents, creator);
+	const contents = await readFile(fileName);
+	const typings = await creator.create('', contents);
 	return await write(outputPath, typings);
 }
 
