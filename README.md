@@ -1,8 +1,8 @@
 # cli-css-typings
 
-[![Build Status](https://travis-ci.org/dojo/cli-build.svg?branch=master)](https://travis-ci.org/dojo/cli-build)
-[![codecov](https://codecov.io/gh/dojo/cli-build/branch/master/graph/badge.svg)](https://codecov.io/gh/dojo/cli-build)
-[![npm version](https://badge.fury.io/js/dojo-cli-build.svg)](http://badge.fury.io/js/dojo-cli-build)
+[![Build Status](https://travis-ci.org/dojo/cli-css-typings.svg?branch=master)](https://travis-ci.org/dojo/cli-css-typings)
+[![codecov](https://codecov.io/gh/dojo/cli-css-typings/branch/master/graph/badge.svg)](https://codecov.io/gh/dojo/cli-css-typings)
+[![npm version](https://badge.fury.io/js/dojo-cli-css-typings.svg)](http://badge.fury.io/js/dojo-cli-css-typings)
 
 Compile [CSS modules](https://github.com/css-modules/css-modules) using the [dojo cli](http://github.com/dojo/cli).
 
