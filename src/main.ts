@@ -14,7 +14,7 @@ interface TypingsArgs extends Argv {
 }
 
 function processFile(args: TypingsArgs, creator: any, file: string, done: Function): void {
-	const outputPath: string = path.join(args.out, path.basename(file, '.css') + '.d.ts');
+	const outputPath: string = path.join(args.out, path.basename(file) + '.d.ts');
 
 	function execute(declarations: string, done: Function): void {
 		creator.create('', declarations).then(function (result: any) {
