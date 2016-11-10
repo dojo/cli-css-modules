@@ -18,8 +18,6 @@
 		"node": "github:dojo/typings/custom/node/node.d.ts#a62873258aa1deed48f9882c193c335436100d4b"
 	},
 	"dependencies": {
-		"chalk": "registry:npm/chalk#1.1.1+20160812215109",
-		"globby": "registry:npm/globby#3.0.0+20160723033700",
-		"mkdirp": "registry:npm/mkdirp#0.5.0+20160723033700"
+		"globby": "registry:npm/globby#3.0.0+20160723033700"
 	}
 }

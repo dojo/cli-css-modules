@@ -17,6 +17,8 @@
     "test": "grunt test"
   },
   "devDependencies": {
+    "@types/chalk": "^0.4.31",
+    "@types/mkdirp": "^0.3.29",
     "codecov.io": "0.1.6",
     "dojo-cli": "^2.0.0-alpha.3",
     "dojo-loader": ">=2.0.0-beta.7",
