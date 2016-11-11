@@ -22,7 +22,7 @@ function readFile(fileName: string): Promise<string> {
 				return;
 			}
 
-			resolve(content);
+			resolve(content.toString());
 		});
 	});
 }

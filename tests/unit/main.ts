@@ -37,12 +37,21 @@ describe('main', () => {
 		);
 		assert.deepEqual(
 			helper.yargs.option.secondCall.args,
-			[ 'o', {
+			['o', {
 				alias: 'out',
 				describe: 'Directory to write CSS module declaration files',
 				demand: true,
 				type: 'string'
-			} ]
+			}]
+		);
+		assert.deepEqual(
+			helper.yargs.option.thirdCall.args,
+			['s', {
+				alias: 'stylus',
+				describe: 'Enable stylus CSS modules',
+				demand: false,
+				type: 'boolean'
+			}]
 		);
 	});
 
@@ -56,6 +65,20 @@ describe('main', () => {
 		}).then(() => {
 			assert.isTrue(writeFileStub.calledOnce);
 			assert.strictEqual(writeFileStub.getCall(0).args[0], 'test.css.d.ts');
+		});
+	});
+
+	it('should create a Stylus CSS module declaration file', () => {
+		const writeFileStub: sinon.SinonStub = sandbox.stub(fs, 'writeFile', function (name: string, content: string, done: Function) {
+			done();
+		});
+		return main.default.run({}, {
+			in: 'tests/support/test.styl',
+			out: '.',
+			stylus: true
+		}).then(() => {
+			assert.isTrue(writeFileStub.calledOnce);
+			assert.strictEqual(writeFileStub.getCall(0).args[0], 'test.styl.d.ts');
 		});
 	});
 });
