@@ -16,6 +16,12 @@ const command: Command = {
 			demand: true,
 			type: 'string'
 		});
+		helper.yargs.option('s', {
+			alias: 'stylus',
+			describe: 'Enable stylus CSS modules',
+			demand: false,
+			type: 'boolean'
+		});
 
 		return helper.yargs;
 	},

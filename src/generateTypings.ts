@@ -4,28 +4,43 @@ import * as path from 'path';
 import * as chalk from 'chalk';
 import * as mkdirp from 'mkdirp';
 import * as globby from 'globby';
+const stylus: any = require('stylus');
 const DtsCreator: any = require('typed-css-modules');
 const read: any = require('read-file-stdin');
 
 export interface TypingsArgs extends Argv {
 	in: string;
 	out: string;
+	stylus: boolean;
 }
 
-function readFile(fileName: string) {
+function readFile(fileName: string): Promise<string> {
 	return new Promise((resolve, reject) => {
-		read(fileName, (err: Error, buffer: Buffer) => {
+		read(fileName, (err: Error, content: string) => {
 			if (err) {
 				reject(err);
 				return;
 			}
 
-			resolve(buffer);
+			resolve(content);
 		});
 	});
 }
 
-function write(name: string, content: { formatted: string }) {
+function compileStylus(content: string): Promise<string> {
+	return new Promise((resolve, reject) => {
+		stylus.render(content, (err: Error, css: string) => {
+			if (err) {
+				reject(err);
+				return;
+			}
+
+			resolve(css);
+		});
+	});
+}
+
+function write(name: string, content: { formatted: string }): Promise<void> {
 	return new Promise((resolve, reject) => {
 		mkdirp(path.dirname(name), (err: Error) => {
 			if (err) {
@@ -33,7 +48,7 @@ function write(name: string, content: { formatted: string }) {
 				return;
 			}
 
-			fs.writeFile(name, content.formatted, (err) => {
+			fs.writeFile(name, content.formatted, (err: Error) => {
 				if (err) {
 					reject(err);
 					return;
@@ -48,7 +63,10 @@ function write(name: string, content: { formatted: string }) {
 async function processFile(args: TypingsArgs, creator: any, fileName: string) {
 	const outputPath: string = path.join(args.out, path.basename(fileName) + '.d.ts');
 
-	const contents = await readFile(fileName);
+	let contents = await readFile(fileName);
+	if (args.stylus) {
+		contents = await compileStylus(contents);
+	}
 	const typings = await creator.create('', contents);
 	return await write(outputPath, typings);
 }
@@ -57,8 +75,8 @@ export function generate(args: TypingsArgs): Promise<void> {
 	let creator: any = new DtsCreator();
 	const inputFiles: string[] = globby.sync(args.in);
 
-	const operations: Promise<void>[] = inputFiles.map((file) => {
-		return processFile(args, creator, file);
+	const operations: Promise<void>[] = inputFiles.map((fileName: string) => {
+		return processFile(args, creator, fileName);
 	});
 
 	return Promise.all(operations).then(() => {
