@@ -3,8 +3,7 @@
 	"devDependencies": {
 		"chai": "registry:npm/chai#3.5.0+20160415060238",
 		"glob": "registry:npm/glob#6.0.0+20160211003958",
-		"sinon": "registry:npm/sinon#1.16.0+20160723033700",
-		"yargs": "registry:npm/yargs#5.0.0+20160907000723"
+		"sinon": "registry:npm/sinon#1.16.0+20160723033700"
 	},
 	"globalDevDependencies": {
 		"digdug": "github:dojo/typings/custom/digdug/digdug.d.ts#a62873258aa1deed48f9882c193c335436100d4b",
@@ -18,6 +17,7 @@
 		"node": "github:dojo/typings/custom/node/node.d.ts#a62873258aa1deed48f9882c193c335436100d4b"
 	},
 	"dependencies": {
-		"globby": "registry:npm/globby#3.0.0+20160723033700"
+		"globby": "registry:npm/globby#3.0.0+20160723033700",
+		"yargs": "registry:npm/yargs#5.0.0+20160907000723"
 	}
 }
