@@ -48,7 +48,7 @@ function write(name: string, content: { formatted: string }): Promise<void> {
 				return;
 			}
 
-			fs.writeFile(name, content.formatted, (err: Error) => {
+			fs.writeFile(name, content.formatted + '\n', (err: Error) => {
 				if (err) {
 					reject(err);
 					return;
