@@ -22,6 +22,24 @@ const command: Command = {
 			demand: false,
 			type: 'boolean'
 		});
+		helper.yargs.option('u', {
+			alias: 'use',
+			describe: 'Utilize the Stylus plugin at <path>',
+			demand: false,
+			type: 'string'
+		});
+		helper.yargs.option('w', {
+			alias: 'with',
+			describe: 'Pass arguments to a Stylus plugin',
+			demand: false,
+			type: 'string'
+		});
+		helper.yargs.option('I', {
+			alias: 'import',
+			describe: 'Add <path> to lookup paths',
+			demand: false,
+			type: 'string'
+		});
 
 		return helper.yargs;
 	},

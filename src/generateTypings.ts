@@ -12,6 +12,8 @@ export interface TypingsArgs extends Argv {
 	in: string;
 	out: string;
 	stylus: boolean;
+	use: string;
+	import: string;
 }
 
 function readFile(fileName: string): Promise<string> {
@@ -27,9 +29,47 @@ function readFile(fileName: string): Promise<string> {
 	});
 }
 
-function compileStylus(content: string): Promise<string> {
+function getStylusPlugins(args: TypingsArgs): {fn: Function, options: any}[] {
+	if (!args.use) {
+		return [];
+	}
+	let plugins: any[] = Array.isArray(args.use) ? args.use : [args.use];
+	plugins = plugins.map((pluginPath, i) => {
+		let index: number = process.argv.indexOf(pluginPath);
+		let options: any = null;
+		// Check if the next option is --with or -w and parse if applicable
+		if (process.argv[index + 1] && (process.argv[index + 1] === '--with' || process.argv[index + 1] === '-w')) {
+			/* tslint:disable:no-eval */
+			options = eval(`(${ process.argv[index + 2] })`);
+		}
+		// Require each plugin
+		let fn: any = require(/^\.+\//.test(pluginPath) ? path.resolve(pluginPath) : pluginPath);
+		if (typeof fn !== 'function') {
+			throw new Error(`plugin ${pluginPath} does not export a function`);
+		}
+		return {
+			fn: fn,
+			options: options
+		};
+	});
+	return plugins;
+}
+
+function compileStylus(args: TypingsArgs, content: string): Promise<string> {
 	return new Promise((resolve, reject) => {
-		stylus.render(content, (err: Error, css: string) => {
+		let plugins: {fn: Function, options: any}[] = getStylusPlugins(args);
+		let imports: string[] = Array.isArray(args.import) ? args.import : [args.import];
+		let styles = stylus(content);
+
+		plugins.forEach(plugin => {
+			styles.use(plugin.fn(plugin.options));
+		});
+
+		args.import && imports.forEach(path => {
+			styles.import(path);
+		});
+
+		styles.render((err: Error, css: string) => {
 			if (err) {
 				reject(err);
 				return;
@@ -65,7 +105,7 @@ async function processFile(args: TypingsArgs, creator: any, fileName: string) {
 
 	let contents = await readFile(fileName);
 	if (args.stylus) {
-		contents = await compileStylus(contents);
+		contents = await compileStylus(args, contents);
 	}
 	const typings = await creator.create('', contents);
 	return await write(outputPath, typings);
