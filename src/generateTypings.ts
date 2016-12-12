@@ -57,7 +57,7 @@ export function generate(args: TypingsArgs): Promise<void> {
 	let creator: any = new DtsCreator();
 	const inputFiles: string[] = globby.sync(args.in);
 
-	const operations: Promise<void>[] = inputFiles.map((file) => {
+	const operations: Promise<{}>[] = inputFiles.map((file) => {
 		return processFile(args, creator, file);
 	});
 
