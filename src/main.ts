@@ -1,10 +1,10 @@
-import { Command, Helper } from 'dojo-cli/interfaces';
+import { Command, Helper, OptionsHelper } from 'dojo-cli/interfaces';
 import { TypingsArgs, generate } from './generateTypings';
 import { Options } from 'yargs';
 
 const command: Command = {
 	description: 'Generate CSS module type declaration files',
-	register(options: (key: string, options: Options) => void): void {
+	register(helper: Helper, options: OptionsHelper): void {
 		options('i', {
 			alias: 'in',
 			describe: 'Input CSS module file(s)',
