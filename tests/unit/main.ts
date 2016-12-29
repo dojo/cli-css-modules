@@ -22,7 +22,7 @@ describe('main', () => {
 
 	it('should register supported arguments', () => {
 		const options = sandbox.stub();
-		main.default.register(options);
+		main.default.register(null, options);
 		assert.deepEqual(
 			options.firstCall.args,
 			['i', {

@@ -1,6 +1,5 @@
 import { Command, Helper, OptionsHelper } from 'dojo-cli/interfaces';
 import { TypingsArgs, generate } from './generateTypings';
-import { Options } from 'yargs';
 
 const command: Command = {
 	description: 'Generate CSS module type declaration files',
