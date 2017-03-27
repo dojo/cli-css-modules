@@ -1,3 +1,7 @@
+# **THIS REPO IS NOW DEPRECATED **
+
+## This functionality is now incorporated into `dojo build`
+
 # cli-css-typings
 
 [![Build Status](https://travis-ci.org/dojo/cli-css-typings.svg?branch=master)](https://travis-ci.org/dojo/cli-css-typings)
