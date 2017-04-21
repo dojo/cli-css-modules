@@ -21,13 +21,10 @@ describe('main', () => {
 	});
 
 	it('should register supported arguments', () => {
-		const helper = { yargs: {
-			option: sandbox.stub(),
-			check: sandbox.stub()
-		} };
-		main.default.register(helper);
+		const options = sandbox.stub();
+		main.default.register(null, options);
 		assert.deepEqual(
-			helper.yargs.option.firstCall.args,
+			options.firstCall.args,
 			['i', {
 				alias: 'in',
 				describe: 'Input CSS module file(s)',
@@ -36,7 +33,7 @@ describe('main', () => {
 			}]
 		);
 		assert.deepEqual(
-			helper.yargs.option.secondCall.args,
+			options.secondCall.args,
 			[ 'o', {
 				alias: 'out',
 				describe: 'Directory to write CSS module declaration files',
